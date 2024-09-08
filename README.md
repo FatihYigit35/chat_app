@@ -1,3 +1,3 @@
-# chat_app
+# Chat App
 
-A new Flutter project.
+A chat application is being developed to learn new information with Flutter.
