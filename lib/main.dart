@@ -1,3 +1,4 @@
+import 'package:chat_app/screen/auth_screen.dart';
 import 'package:flutter/material.dart';
 
 import 'theme/dark_theme.dart';
@@ -15,11 +16,7 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       theme: lightTheme,
       darkTheme: darkTheme,
-      home: const Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
-      ),
+      home: const AuthScreen(),
     );
   }
 }
