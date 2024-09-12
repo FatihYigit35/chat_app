@@ -8,6 +8,8 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
+  var _isLogin = true;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,9 +46,53 @@ class _AuthScreenState extends State<AuthScreen> {
                             ),
                             obscureText: true,
                           ),
-                          TextButton(
+                          const SizedBox(height: 20),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Theme.of(context)
+                                  .colorScheme
+                                  .onPrimaryContainer,
+                            ),
                             onPressed: () {},
-                            child: const Text('Login'),
+                            child: Text(
+                              _isLogin ? 'Login' : 'Signup',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .surfaceContainer),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Visibility(
+                            visible: _isLogin,
+                            child: TextButton(
+                              onPressed: () {},
+                              child: const Text('Forgot my password?'),
+                            ),
+                          ),
+                          Visibility(
+                            visible: _isLogin,
+                            child: Text(
+                              'Or',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium!
+                                  .copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface),
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              setState(() {
+                                _isLogin = !_isLogin;
+                              });
+                            },
+                            child: Text(_isLogin
+                                ? 'Create an account'
+                                : 'I already have an account'),
                           ),
                         ],
                       ),
