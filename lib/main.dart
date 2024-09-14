@@ -7,6 +7,7 @@ import 'theme/dark_theme.dart';
 import 'theme/light_theme.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
