@@ -61,89 +61,14 @@ class _AuthScreenState extends State<AuthScreen> {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            TextFormField(
-                              decoration: const InputDecoration(
-                                labelText: 'E-Mail',
-                              ),
-                              keyboardType: TextInputType.emailAddress,
-                              autocorrect: false,
-                              textCapitalization: TextCapitalization.none,
-                              validator: (value) {
-                                if (value == null ||
-                                    value.trim().isEmpty ||
-                                    !value.contains('@')) {
-                                  return 'Please enter a valid emmail address';
-                                }
-                                return null;
-                              },
-                              onSaved: (newValue) {
-                                _enteredEmail = newValue!;
-                              },
-                            ),
-                            TextFormField(
-                              decoration: const InputDecoration(
-                                labelText: 'Password',
-                              ),
-                              obscureText: true,
-                              validator: (value) {
-                                if (value == null || value.trim().length < 6) {
-                                  return 'Password must be at least 6 characters long';
-                                }
-
-                                return null;
-                              },
-                              onSaved: (newValue) {
-                                _enteredPassqord = newValue!;
-                              },
-                            ),
+                            textFormFieldEmail(),
+                            textFormFieldPassword(),
                             const SizedBox(height: 20),
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Theme.of(context)
-                                    .colorScheme
-                                    .onPrimaryContainer,
-                              ),
-                              onPressed: _submit,
-                              child: Text(
-                                _isLogin ? 'Login' : 'Signup',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .surfaceContainer),
-                              ),
-                            ),
+                            buttonLoginSignup(context),
                             const SizedBox(height: 8),
-                            Visibility(
-                              visible: _isLogin,
-                              child: TextButton(
-                                onPressed: () {},
-                                child: const Text('Forgot my password?'),
-                              ),
-                            ),
-                            Visibility(
-                              visible: _isLogin,
-                              child: Text(
-                                'Or',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium!
-                                    .copyWith(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSurface),
-                              ),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                setState(() {
-                                  _isLogin = !_isLogin;
-                                });
-                              },
-                              child: Text(_isLogin
-                                  ? 'Create an account'
-                                  : 'I already have an account'),
-                            ),
+                            buttonForgotPassword(),
+                            textOr(context),
+                            buttonCreateOrHaveAccount(),
                           ],
                         ),
                       ),
@@ -155,6 +80,94 @@ class _AuthScreenState extends State<AuthScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  TextButton buttonCreateOrHaveAccount() {
+    return TextButton(
+      onPressed: () {
+        setState(() {
+          _isLogin = !_isLogin;
+        });
+      },
+      child: Text(_isLogin ? 'Create an account' : 'I already have an account'),
+    );
+  }
+
+  Visibility textOr(BuildContext context) {
+    return Visibility(
+      visible: _isLogin,
+      child: Text(
+        'Or',
+        style: Theme.of(context)
+            .textTheme
+            .bodyMedium!
+            .copyWith(color: Theme.of(context).colorScheme.onSurface),
+      ),
+    );
+  }
+
+  Visibility buttonForgotPassword() {
+    return Visibility(
+      visible: _isLogin,
+      child: TextButton(
+        onPressed: () {},
+        child: const Text('Forgot my password?'),
+      ),
+    );
+  }
+
+  ElevatedButton buttonLoginSignup(BuildContext context) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
+      ),
+      onPressed: _submit,
+      child: Text(
+        _isLogin ? 'Login' : 'Signup',
+        style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).colorScheme.surfaceContainer),
+      ),
+    );
+  }
+
+  TextFormField textFormFieldPassword() {
+    return TextFormField(
+      decoration: const InputDecoration(
+        labelText: 'Password',
+      ),
+      obscureText: true,
+      validator: (value) {
+        if (value == null || value.trim().length < 6) {
+          return 'Password must be at least 6 characters long';
+        }
+
+        return null;
+      },
+      onSaved: (newValue) {
+        _enteredPassqord = newValue!;
+      },
+    );
+  }
+
+  TextFormField textFormFieldEmail() {
+    return TextFormField(
+      decoration: const InputDecoration(
+        labelText: 'E-Mail',
+      ),
+      keyboardType: TextInputType.emailAddress,
+      autocorrect: false,
+      textCapitalization: TextCapitalization.none,
+      validator: (value) {
+        if (value == null || value.trim().isEmpty || !value.contains('@')) {
+          return 'Please enter a valid emmail address';
+        }
+        return null;
+      },
+      onSaved: (newValue) {
+        _enteredEmail = newValue!;
+      },
     );
   }
 }
