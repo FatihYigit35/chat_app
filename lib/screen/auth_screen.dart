@@ -188,9 +188,7 @@ class _AuthScreenState extends State<AuthScreen> {
               ? Icons.visibility_rounded
               : Icons.visibility_off_rounded),
         ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12), // Apply corner radius
-        ),
+        border: borderTextFormField,
       ),
       obscureText: _obscured,
       validator: (value) {
@@ -211,9 +209,7 @@ class _AuthScreenState extends State<AuthScreen> {
       decoration: InputDecoration(
         labelText: 'E-Mail',
         filled: true,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12), // Apply corner radius
-        ),
+        border: borderTextFormField,
       ),
       keyboardType: TextInputType.emailAddress,
       autocorrect: false,
