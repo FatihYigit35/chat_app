@@ -1,6 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../constant/constants.dart';
+
+final _firebaseAuth = FirebaseAuth.instance;
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -11,11 +14,12 @@ class AuthScreen extends StatefulWidget {
 
 class _AuthScreenState extends State<AuthScreen> {
   final _formKey = GlobalKey<FormState>();
+  var _obscured = true;
   var _isLogin = true;
   var _enteredEmail = '';
   var _enteredPassqord = '';
 
-  void _submit() {
+  void _submit() async {
     final formState = _formKey.currentState;
 
     if (formState == null) {
@@ -29,8 +33,48 @@ class _AuthScreenState extends State<AuthScreen> {
 
     formState.save();
 
-    if (_isLogin) {
-    } else {}
+    try {
+      if (_isLogin) {
+        final userCredential = await _firebaseAuth.signInWithEmailAndPassword(
+            email: _enteredEmail, password: _enteredPassqord);
+
+        final id = userCredential.user?.uid;
+        print('login user id: $id');
+      } else {
+        final userCredential =
+            await _firebaseAuth.createUserWithEmailAndPassword(
+                email: _enteredEmail, password: _enteredPassqord);
+
+        final id = userCredential.user?.uid;
+        print('register user id: $id');
+      }
+    } on FirebaseAuthException catch (e) {
+      // switch(e.code){
+      //   case 'email-already-in-use':
+      //     print('The account already exists for that email.');
+      //     break;
+      //   case 'invalid-email':
+      //     print('The account already exists for that email.');
+      //     break;
+
+      //   default:
+      // }
+
+      if (!mounted) {
+        return;
+      }
+
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(e.message ?? 'Authentication failed'),
+      ));
+    }
+  }
+
+  void _toggleObscured() {
+    setState(() {
+      _obscured = !_obscured;
+    });
   }
 
   @override
@@ -62,6 +106,7 @@ class _AuthScreenState extends State<AuthScreen> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             textFormFieldEmail(),
+                            const SizedBox(height: 8),
                             textFormFieldPassword(),
                             const SizedBox(height: 20),
                             buttonLoginSignup(context),
@@ -134,10 +179,20 @@ class _AuthScreenState extends State<AuthScreen> {
 
   TextFormField textFormFieldPassword() {
     return TextFormField(
-      decoration: const InputDecoration(
+      decoration: InputDecoration(
+        filled: true,
         labelText: 'Password',
+        suffixIcon: InkWell(
+          onTap: _toggleObscured,
+          child: Icon(_obscured
+              ? Icons.visibility_rounded
+              : Icons.visibility_off_rounded),
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12), // Apply corner radius
+        ),
       ),
-      obscureText: true,
+      obscureText: _obscured,
       validator: (value) {
         if (value == null || value.trim().length < 6) {
           return 'Password must be at least 6 characters long';
@@ -153,8 +208,12 @@ class _AuthScreenState extends State<AuthScreen> {
 
   TextFormField textFormFieldEmail() {
     return TextFormField(
-      decoration: const InputDecoration(
+      decoration: InputDecoration(
         labelText: 'E-Mail',
+        filled: true,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12), // Apply corner radius
+        ),
       ),
       keyboardType: TextInputType.emailAddress,
       autocorrect: false,
