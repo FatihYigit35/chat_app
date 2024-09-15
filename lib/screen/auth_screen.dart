@@ -1,5 +1,10 @@
+import 'dart:io';
+
+import 'package:chat_app/widgets/user_image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:uuid/v8.dart';
 
 import '../constant/constants.dart';
 
@@ -18,6 +23,7 @@ class _AuthScreenState extends State<AuthScreen> {
   var _isLogin = true;
   var _enteredEmail = '';
   var _enteredPassqord = '';
+  File? _selectedImage;
 
   void _submit() async {
     final formState = _formKey.currentState;
@@ -27,7 +33,7 @@ class _AuthScreenState extends State<AuthScreen> {
     }
 
     final isValid = formState.validate();
-    if (!isValid) {
+    if (!isValid || !_isLogin && _selectedImage == null) {
       return;
     }
 
@@ -37,16 +43,22 @@ class _AuthScreenState extends State<AuthScreen> {
       if (_isLogin) {
         final userCredential = await _firebaseAuth.signInWithEmailAndPassword(
             email: _enteredEmail, password: _enteredPassqord);
-
-        final id = userCredential.user?.uid;
-        print('login user id: $id');
       } else {
         final userCredential =
             await _firebaseAuth.createUserWithEmailAndPassword(
                 email: _enteredEmail, password: _enteredPassqord);
 
-        final id = userCredential.user?.uid;
-        print('register user id: $id');
+        final id = userCredential.user!.uid;
+
+        final storageRef = FirebaseStorage.instance
+            .ref()
+            .child('user_images')
+            .child(id)
+            .child('${uuid.generate()}.jpg');
+
+        await storageRef.putFile(_selectedImage!);
+        final imageUrl = await storageRef.getDownloadURL();
+        print(imageUrl);
       }
     } on FirebaseAuthException catch (e) {
       // switch(e.code){
@@ -91,7 +103,7 @@ class _AuthScreenState extends State<AuthScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  margin: const EdgeInsets.all(20),
+                  margin: const EdgeInsets.all(15),
                   width: 200,
                   child: Image.asset('assets/images/chat.png'),
                 ),
@@ -105,6 +117,13 @@ class _AuthScreenState extends State<AuthScreen> {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
+                            if (!_isLogin)
+                              UserImagePicker(
+                                onSelectedImage: (pickedImage) {
+                                  _selectedImage = pickedImage;
+                                },
+                              ),
+                            const SizedBox(height: 8),
                             textFormFieldEmail(),
                             const SizedBox(height: 8),
                             textFormFieldPassword(),
