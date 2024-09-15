@@ -22,6 +22,7 @@ class _AuthScreenState extends State<AuthScreen> {
   var _obscured = true;
   var _isLogin = true;
   var _isUploading = false;
+  var _enteredUserName = '';
   var _enteredEmail = '';
   var _enteredPassqord = '';
   File? _selectedImage;
@@ -68,8 +69,11 @@ class _AuthScreenState extends State<AuthScreen> {
         await storageRef.putFile(_selectedImage!);
         final imageUrl = await storageRef.getDownloadURL();
 
-        await FirebaseFirestore.instance.collection('users').doc(id).set(
-            {'userName': '', 'email': _enteredEmail, 'imageProfile': imageUrl});
+        await FirebaseFirestore.instance.collection('users').doc(id).set({
+          'userName': _enteredUserName,
+          'email': _enteredEmail,
+          'imageProfile': imageUrl
+        });
 
         setState(() {
           _isUploading = false;
@@ -141,6 +145,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                   _selectedImage = pickedImage;
                                 },
                               ),
+                            textFormFieldUserName(),
                             const SizedBox(height: 8),
                             textFormFieldEmail(),
                             const SizedBox(height: 8),
@@ -275,6 +280,32 @@ class _AuthScreenState extends State<AuthScreen> {
       onSaved: (newValue) {
         _enteredEmail = newValue!;
       },
+    );
+  }
+
+  Visibility textFormFieldUserName() {
+    return Visibility(
+      visible: !_isLogin,
+      child: TextFormField(
+        decoration: InputDecoration(
+          labelText: 'User Name',
+          filled: true,
+          border: borderTextFormField,
+        ),
+        keyboardType: TextInputType.name,
+        enableSuggestions: false,
+        autocorrect: false,
+        textCapitalization: TextCapitalization.none,
+        validator: (value) {
+          if (value == null || value.trim().isEmpty) {
+            return 'Please enter a valid user name';
+          }
+          return null;
+        },
+        onSaved: (newValue) {
+          _enteredUserName = newValue!;
+        },
+      ),
     );
   }
 }
