@@ -21,6 +21,7 @@ class _AuthScreenState extends State<AuthScreen> {
   final _formKey = GlobalKey<FormState>();
   var _obscured = true;
   var _isLogin = true;
+  var _isUploading = false;
   var _enteredEmail = '';
   var _enteredPassqord = '';
   File? _selectedImage;
@@ -40,9 +41,17 @@ class _AuthScreenState extends State<AuthScreen> {
     formState.save();
 
     try {
+      setState(() {
+        _isUploading = true;
+      });
+
       if (_isLogin) {
         final userCredential = await _firebaseAuth.signInWithEmailAndPassword(
             email: _enteredEmail, password: _enteredPassqord);
+
+        setState(() {
+          _isUploading = false;
+        });
       } else {
         final userCredential =
             await _firebaseAuth.createUserWithEmailAndPassword(
@@ -59,8 +68,15 @@ class _AuthScreenState extends State<AuthScreen> {
         await storageRef.putFile(_selectedImage!);
         final imageUrl = await storageRef.getDownloadURL();
         print(imageUrl);
+
+        setState(() {
+          _isUploading = false;
+        });
       }
     } on FirebaseAuthException catch (e) {
+      setState(() {
+        _isUploading = false;
+      });
       // switch(e.code){
       //   case 'email-already-in-use':
       //     print('The account already exists for that email.');
@@ -128,6 +144,7 @@ class _AuthScreenState extends State<AuthScreen> {
                             const SizedBox(height: 8),
                             textFormFieldPassword(),
                             const SizedBox(height: 20),
+                            circularProgressIndicator(),
                             buttonLoginSignup(context),
                             const SizedBox(height: 8),
                             buttonForgotPassword(),
@@ -147,14 +164,25 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
-  TextButton buttonCreateOrHaveAccount() {
-    return TextButton(
-      onPressed: () {
-        setState(() {
-          _isLogin = !_isLogin;
-        });
-      },
-      child: Text(_isLogin ? 'Create an account' : 'I already have an account'),
+  Visibility circularProgressIndicator() {
+    return Visibility(
+      visible: _isUploading,
+      child: const CircularProgressIndicator(),
+    );
+  }
+
+  Visibility buttonCreateOrHaveAccount() {
+    return Visibility(
+      visible: !_isUploading,
+      child: TextButton(
+        onPressed: () {
+          setState(() {
+            _isLogin = !_isLogin;
+          });
+        },
+        child:
+            Text(_isLogin ? 'Create an account' : 'I already have an account'),
+      ),
     );
   }
 
@@ -181,17 +209,20 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
-  ElevatedButton buttonLoginSignup(BuildContext context) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
-      ),
-      onPressed: _submit,
-      child: Text(
-        _isLogin ? 'Login' : 'Signup',
-        style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Theme.of(context).colorScheme.surfaceContainer),
+  Visibility buttonLoginSignup(BuildContext context) {
+    return Visibility(
+      visible: !_isUploading,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
+        ),
+        onPressed: _submit,
+        child: Text(
+          _isLogin ? 'Login' : 'Signup',
+          style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.surfaceContainer),
+        ),
       ),
     );
   }
