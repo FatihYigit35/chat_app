@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:chat_app/models/user_model.dart';
 import 'package:chat_app/widgets/user_image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -69,11 +70,17 @@ class _AuthScreenState extends State<AuthScreen> {
         await storageRef.putFile(_selectedImage!);
         final imageUrl = await storageRef.getDownloadURL();
 
-        await FirebaseFirestore.instance.collection('users').doc(id).set({
-          'userName': _enteredUserName,
-          'email': _enteredEmail,
-          'imageProfile': imageUrl
-        });
+        final userModel = UserModel(
+          id: id,
+          userName: _enteredUserName,
+          email: _enteredEmail,
+          imageProfile: imageUrl,
+        );
+
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(id)
+            .set(userModel.toMap());
 
         setState(() {
           _isUploading = false;
