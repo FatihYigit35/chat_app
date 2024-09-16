@@ -145,18 +145,18 @@ class _AuthScreenState extends State<AuthScreen> {
                                   _selectedImage = pickedImage;
                                 },
                               ),
-                            textFormFieldUserName(),
+                            _textFormFieldUserName(),
                             const SizedBox(height: 8),
-                            textFormFieldEmail(),
+                            _textFormFieldEmail(),
                             const SizedBox(height: 8),
-                            textFormFieldPassword(),
+                            _textFormFieldPassword(),
                             const SizedBox(height: 20),
-                            circularProgressIndicator(),
-                            buttonLoginSignup(context),
+                            _circularProgressIndicator(),
+                            _buttonLoginSignup(context),
                             const SizedBox(height: 8),
-                            buttonForgotPassword(),
-                            textOr(context),
-                            buttonCreateOrHaveAccount(),
+                            _buttonForgotPassword(),
+                            _textOr(context),
+                            _buttonCreateOrHaveAccount(),
                           ],
                         ),
                       ),
@@ -171,14 +171,14 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
-  Visibility circularProgressIndicator() {
+  Visibility _circularProgressIndicator() {
     return Visibility(
       visible: _isUploading,
       child: const CircularProgressIndicator(),
     );
   }
 
-  Visibility buttonCreateOrHaveAccount() {
+  Visibility _buttonCreateOrHaveAccount() {
     return Visibility(
       visible: !_isUploading,
       child: TextButton(
@@ -193,7 +193,7 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
-  Visibility textOr(BuildContext context) {
+  Visibility _textOr(BuildContext context) {
     return Visibility(
       visible: _isLogin,
       child: Text(
@@ -206,7 +206,7 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
-  Visibility buttonForgotPassword() {
+  Visibility _buttonForgotPassword() {
     return Visibility(
       visible: _isLogin,
       child: TextButton(
@@ -216,7 +216,7 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
-  Visibility buttonLoginSignup(BuildContext context) {
+  Visibility _buttonLoginSignup(BuildContext context) {
     return Visibility(
       visible: !_isUploading,
       child: ElevatedButton(
@@ -234,7 +234,7 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
-  TextFormField textFormFieldPassword() {
+  TextFormField _textFormFieldPassword() {
     return TextFormField(
       decoration: InputDecoration(
         filled: true,
@@ -261,7 +261,7 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
-  TextFormField textFormFieldEmail() {
+  TextFormField _textFormFieldEmail() {
     return TextFormField(
       decoration: InputDecoration(
         labelText: 'E-Mail',
@@ -283,7 +283,7 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
-  Visibility textFormFieldUserName() {
+  Visibility _textFormFieldUserName() {
     return Visibility(
       visible: !_isLogin,
       child: TextFormField(
